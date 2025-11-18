@@ -135,7 +135,95 @@ esac
 <img width="790" height="405" alt="image" src="https://github.com/user-attachments/assets/3b5f6fd8-7a60-4bdd-8ec9-240c2f5d4354" />
 <img width="795" height="601" alt="image" src="https://github.com/user-attachments/assets/f1099491-f9a2-4d0a-b69e-e75934436035" />
 
+Чтобы вывести пронумерованные строчки из `/etc/passwd`, в которых есть оболочка `/bin/bash`, и перенаправить вывод файл, воспользуемся следующими командами
 
+```bash
+awk -F":" '{print $7}' /etc/passwd | grep -n "/bin/bash" > bash.txt
+cat bash.txt
+```
 
+Проверим в терминале:
 
+<img width="849" height="106" alt="image" src="https://github.com/user-attachments/assets/3f5aeda5-8988-4fc0-9232-8a6159b97734" />
 
+Так как у меня нет изначально `/bin/sh`, то я заменю `/bin/bash` на `/bin/sh`, а затем наоборот. Так как нам нужно проводить изменения в файле `/etc/passwd`, то нам нужно сделать его копию `~/passwd.bak`, поскольку этот файл — содержит список пользовательских учётных записей. Является первым и основным источником информации о правах пользователя ОС.
+
+```bash
+#!/bin/bash
+
+FILE_SAVE=$1
+
+if [[ -z "$FILE_SAVE" ]]; then
+        echo "Please provide the name of file where will be saved data"
+        exit 1
+fi
+
+if [[ ! -f "/etc/passwd" ]]; then
+        echo "Error: Source file /etc/passwd not found"
+        exit 1
+fi
+
+echo "Creating a backup of /etc/passwd"
+sudo cp /etc/passwd ./passwd.bak
+
+if [[ $? -eq 0 && -f "/home/ilya/passwd.bak"  ]]; then
+        echo "Backup successfully created: passwd.bak"
+else
+        echo "Backup creation failed"
+        exit 1
+fi
+
+printf "\n"
+echo "Outputting lines from /bin/bash to the $FILE_SAVE..."
+awk -F":" '{print $7; print "-----------"}' ./passwd.bak | grep -n "/bin/bash" > $FILE_SAVE
+
+if [[ -s "$FILE_SAVE" ]]; then
+        echo "Data successfully written to $FILE_SAVE"
+else
+        echo "No data written to $FILE_SAVE"
+fi
+
+echo "Contents of the $FILE_SAVE file:"
+echo "================================"
+cat $FILE_SAVE
+echo ""
+
+echo "Replace /bin/bash with /bin/sh in the passwd.bak..."
+sed -i 's/bash/sh/g' ./passwd.bak
+
+echo "Checking the changes:"
+echo "===================="
+echo "Lines with /bin/sh:"
+awk -F":" '{print $7; print "---------"}' ./passwd.bak | grep -n "/bin/sh" > $FILE_SAVE
+
+echo "Contents of the $FILE_SAVE file:"
+echo "================================"
+cat $FILE_SAVE
+echo ""
+```
+Проверим работу в терминале:
+
+<img width="1053" height="469" alt="image" src="https://github.com/user-attachments/assets/aa29d883-c50c-4315-83eb-e59cc5476297" />
+
+**_ Операции проверки файлов _**:
+ - e — файл существует
+ - f — обычный файл (не каталог)
+ - s — ненулевой размер файла
+ - d — файл является каталогом
+ - b — файл является блочным устройством
+ - c — файл является символьным устройством
+ - p — файл является каналом
+ - h — файл является символической ссылкой
+ - S — файл является сокетом
+ - t — является ли файл стандартным устройством ввода (-t 0 ) или вывода ( -t 1 )
+ - L — файл являетcя символической ссылкой
+ - r — файл доступен для чтения
+ - w — файл доступен для записи
+ - x — файл доступен для выполнения
+ - O, G, N — вы являетесь владельцем файла, вы принадлежите к той же группе, что и файл, файл был модифицирован с момента последнего чтения
+ - f1 -nt f2 — файл f1 более новый, чем f2
+ - f1 -ot f2 — файл f1 более старый, чем f2
+ - f1 -ef f2 — файлы f1 и f2 являются жесткими ссылками на один и тот же файл
+ - ! — логическое отрицание
+
+   
