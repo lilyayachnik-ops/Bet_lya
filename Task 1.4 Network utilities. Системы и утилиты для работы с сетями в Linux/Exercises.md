@@ -1,4 +1,4 @@
-# Chekpoints
+<img width="712" height="108" alt="image" src="https://github.com/user-attachments/assets/bc412cc4-e363-45a3-babc-1b09d9a19d6b" /># Chekpoints
 Установили VirtualBox на свой комьютер. Создали две виртуальные машины: `bet` — это основной хост. а `remote` — это удаленный хост:
 
 <img width="945" height="637" alt="image" src="https://github.com/user-attachments/assets/5b25d5e4-dd12-472c-988a-271587d9bc23" />
@@ -222,6 +222,53 @@ sudo apt install telnetd
 <img width="792" height="645" alt="image" src="https://github.com/user-attachments/assets/942e098a-570f-4b07-9914-95c9914fd183" />
 
 Как видим, данные зашифрованы.
+
+Включим на удаленном хосте фаервол `sudo ufw enable`:
+
+<img width="712" height="108" alt="image" src="https://github.com/user-attachments/assets/4f2f4cc7-4039-4e91-a6f9-ac5a3570528c" />
+
+Добавим запрещающее правило `sudo ufw deny 22`: все входящие подключения на порт `SSH`(22) будут заблокированы:
+
+<img width="714" height="72" alt="image" src="https://github.com/user-attachments/assets/fb83421b-a2ad-41fd-a996-93164be789ef" />
+<img width="720" height="36" alt="image" src="https://github.com/user-attachments/assets/44113114-29b8-4668-8f4c-f2eded2d4754" />
+
+Вернем доступ, как было, с помощью команды `sudo ufw allow 22`:
+
+<img width="712" height="75" alt="image" src="https://github.com/user-attachments/assets/96c3f43b-7f04-4df9-ac98-f011f1fd8292" />
+
+**NMAP**:это очень популярный сканер сети с открытым исходным кодом, который может использоваться как в Windows, так и в Linux.
+
+```bash
+# nmap опции адрес
+Основные опции
+-sL — просто создать список работающих портов, но не сканировать порты
+-sP — только проверять доступен ли хост с помощью ping
+-PN — считать все хосты доступными, даже если они не отвечают на ping
+-sU — UDP сканирование
+-p — указать диапозон портов для сканирования
+-e — указать определенный интерфейс
+-sS/sT/sA/sW/sM — TCP сканирование
+```
+Установим данную утилиту на основной хост `sudo apt install nmap` и просканируем удалённый хост с основного `nmap -Pn ip_address_remote`:
+
+<img width="726" height="199" alt="image" src="https://github.com/user-attachments/assets/a0135bae-ddd6-42ef-bbef-1eb704b3470f" />
+
+На удаленном хосте выполним команду `sudo ss -tuln`:
+
+<img width="711" height="329" alt="image" src="https://github.com/user-attachments/assets/20c6c4f0-0fdd-4f98-b41a-cb49608fed1f" />
+
+**Важно**: Иногда бывает необходимо посмотреть какие сетевые подключения Linux открыты, какие IP адреса используются или какие порты прослушиваются. Раньше для таких целей использовалась утилита netstat. Netstat сканирует директорию /proc для получения необходимой информации, но в новых версиях ядра была реализована специальная подсистема для мониторинга сети в Linux. Её и использует ss, с помощью этой утилиты вы можете получить больше информации о сетевых подключениях и работает она гораздо быстрее
+
+```bash
+ss опции [фильтр_состояния][фильтр_адреса]
+опции
+-n — не определять имена служб
+-r — определять сетевые имена с помощью DNS
+-a — отобразить все сокеты
+-l — показать только прослушиваемые сокеты
+```
+
+
 
 
 
