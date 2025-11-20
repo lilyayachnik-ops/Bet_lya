@@ -1,4 +1,4 @@
-<img width="712" height="108" alt="image" src="https://github.com/user-attachments/assets/bc412cc4-e363-45a3-babc-1b09d9a19d6b" /># Chekpoints
+# Chekpoints
 Установили VirtualBox на свой комьютер. Создали две виртуальные машины: `bet` — это основной хост. а `remote` — это удаленный хост:
 
 <img width="945" height="637" alt="image" src="https://github.com/user-attachments/assets/5b25d5e4-dd12-472c-988a-271587d9bc23" />
