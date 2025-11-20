@@ -1,4 +1,4 @@
-<img width="1081" height="401" alt="image" src="https://github.com/user-attachments/assets/26c19e39-4682-4b23-8c4c-9648d2120718" /><img width="835" height="564" alt="image" src="https://github.com/user-attachments/assets/8f6f613a-c07e-40ce-abc3-b567eea65a7a" /># Chekpoints
+# Chekpoints
 
 Необходимо написать `Systemd unit`, который будет раз в 15 секунд писать в файл вывод команды `uptime`. При убийстве процесса он должен перезапускаться.
 Для начала напишем скрипт `uptime_script.sh`, где на вход передаем файл, куда будет складываться результат вывода команды:
