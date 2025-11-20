@@ -1,4 +1,4 @@
-<img width="1077" height="526" alt="image" src="https://github.com/user-attachments/assets/53737eee-4041-48c3-8bdd-f1e7933e5821" /># Checkpoints
+# Checkpoints
 
 Создали три `VM` с названиями `Blue-server`, `Yellow-server`, `balancer-server`.
 
