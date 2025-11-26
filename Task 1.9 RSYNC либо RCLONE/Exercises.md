@@ -29,12 +29,14 @@
   Для решения нашей задачи для начала установим утилиту `rclone`:
 
   ```bash
+  # -O сохранить файл под оригинальным названием
+  curl -O https://downloads.rclone.org/rclone-current-linux-386.zip
   # Распаковываем архим с утилитой rclone для работы с облачными хранилищами
-  unzip rclone-current-linux-amd64.zip
+  unzip rclone-current-linux-386.zip
   #  Переходим в данную папку
-  cd rclone-current-linux-amd64
+  cd rclone-v1.72.0-linux-386
   # Копируем программу в системную директорию для исполняемых файлов, доступных всем пользователем
-  sudo cp rclone /usr/bin
+  sudo cp rclone /usr/sbin
   # Меняем владельца файла и группу
   sudo chown root:root /usr/sbin/rclone
   # Устанавливаем права доступа u=rwx,g=r-x,o=r-x
@@ -199,33 +201,265 @@ rsync опции источник приемник
 --version — Версия утилиты.
 ```
 
-
-Для выполнения нашей задачи используем следующую команду:
-
-```bash
-# Синхронизация двух папок с помощью rsync, где
-# a — сохраняются все атрибуты оригинальных файлов
-# v — выводит подробную информацию
-# z — сжимает файлы перед передачей
-# u — пропускает файлы, которые новее на приемнике
-
-rsync -avzu /home/bet/sync remote@IP_addr_remote:/home/remote/remote_sync
-```
-
 Напишем простой скрипт:
 
 ```bash
 #!/bin/bash
-rsync -avzu /home/bet/ilya_bet_sync/ remote@IP_addr_remote:/home/remote/ilya_bet_backup
+RSYNC_PARAMS=$1
+LOCAL_DIR=$2
+REMOTE_DIR=$3
+SSH_TARGET=$4
 
+if [[ $# -ne 4 ]]; then
+    echo "Please provides at least 4 parametres"
+    echo "Using: $0 <rsync_params> <local_dir> <remote_dir> <ssh_target>"
+    exit 1
+fi
+
+if [[ -z "$RSYNC_PARAMS" ]]; then
+    echo "Please provide rsync parametres. It will be -avzu"
+    exit 1
+fi
+
+if [[ ! -d "$LOCAL_DIR" ]]; then
+    echo "Pplease provide local directory..."
+    exit 1
+fi
+
+if [[ -z "$REMOTE_DIR" ]]; then
+   echo "Please provide remote directory..."
+
+if [[ -z "$SSH_TARGET" ]]; then
+    echo "Please provide remote host"
+    exit 1
+fi
+printf "\n"
+if ! ssh "$SSH_TARGET" "mkdir -p '$REMOTE_DIR'"; then
+   echo "Errors: Failed to create remote directory $REMOTE_DIR"
+   exit 1
+fi
+printf "\n"
+
+echo "Rsync parameters: $RSYNC_PARAMS"
+echo "==============================="
+echo "Local directory: $LOCAL_DIR"
+echo "==============================="
+echo "Remote diectory: $REMOTE_DIR"
+echo "==============================="
+echo "Remote host: $SSH_TARGET"
+echo "==============================="
+printf "\n"
+
+echo "Starting rsync ..."
+if rsync $RSYNC_PARAMS "$LOCAL_DIR" "$SSH_TARGET":"$REMOTE_DIR"; then
+    echo "Rsync completed successfully"
+else
+    echo "Rsync didn't completed successfully"
+    exit 1
+fi
 ```
+
+Проверим в терминале:
+
+<img width="726" height="365" alt="image" src="https://github.com/user-attachments/assets/ceceab3e-8d05-4157-bba6-507a9a77873f" />
+
+Если не передать один из параметров, то получим следующую ошибку:
+
+<img width="723" height="93" alt="image" src="https://github.com/user-attachments/assets/737cb880-093c-447f-beee-85eaedbde4d3" />
+
+Если оставить пустым локальную директорию, то получим следующую ошибку:
+
+<img width="731" height="75" alt="image" src="https://github.com/user-attachments/assets/d2af233a-7e23-4dc4-8633-9ae1ec87d53e" />
+
+Проверять остальные ошибки дальше можно, но мы видим, что наши проверки отрабатывают.
+
+Улучшим скрипт, что у нас осуществлялось подключение с `remote` к `GCP Storage` и мы могли синхронизировать `ilya_bet_backup` с бакетом `synchronization`:
+
+```bash
+#!/bin/bash
+RSYNC_PARAMS=$1
+LOCAL_DIR=$2
+REMOTE_DIR=$3
+SSH_TARGET=$4
+RCLONE_CMD=$5
+
+if [[ $# -ne 5 ]]; then
+    echo "Please provides at least 5 parametres"
+    echo "Using: $0 <rsync_params> <local_dir> <remote_dir> <ssh_target> <rclone_cmd>"
+    exit 1
+fi
+
+if [[ -z "$RSYNC_PARAMS" ]]; then
+    echo "Please provide rsync parametres. It will be -avzu"
+    exit 1
+fi
+
+if [[ ! -d "$LOCAL_DIR" ]]; then
+    echo "Pplease provide local directory..."
+    exit 1
+fi
+
+if [[ -z "$REMOTE_DIR" ]]; then
+   echo "Please provide remote directory..."
+
+if [[ -z "$SSH_TARGET" ]]; then
+    echo "Please provide remote host"
+    exit 1
+fi
+
+if [[ -z "$RCLONE_CMD" ]]; then 
+    echo "Please provide cmd reclone"
+    exit 1
+fi
+
+printf "\n"
+
+if ! ssh "$SSH_TARGET" "mkdir -p '$REMOTE_DIR'"; then
+   echo "Errors: Failed to create remote directory $REMOTE_DIR"
+   exit 1
+fi
+printf "\n"
+
+echo "Rsync parameters: $RSYNC_PARAMS"
+echo "==============================="
+echo "Local directory: $LOCAL_DIR"
+echo "==============================="
+echo "Remote diectory: $REMOTE_DIR"
+echo "==============================="
+echo "Remote host: $SSH_TARGET"
+echo "==============================="
+echo "Rclone command line: $RCLONE_CMD"
+echo "==============================="
+printf "\n"
+
+echo "Starting rsync ..."
+if rsync $RSYNC_PARAMS "$LOCAL_DIR" "$SSH_TARGET":"$REMOTE_DIR"; then
+    echo "Rsync completed successfully"
+else
+    echo "Rsync didn't completed successfully"
+    exit 1
+fi
+
+echo "Starting rclone remote->GCP"
+if ssh "$SSH_TARGET" "rclone $RCLONE_CMD $REMOTE_DIR ilya_bet:synchronization -P"; then
+   echo "Rclone completed successfully"
+else
+   echo "Rclone didn't complete successfully"
+   exit 1
+fi
+```
+
+Проверим в терминале:
+
+<img width="719" height="432" alt="image" src="https://github.com/user-attachments/assets/1735de70-4a8c-40fb-80f0-5b5715bbdf7d" />
+<img width="723" height="167" alt="image" src="https://github.com/user-attachments/assets/f53d67b6-1a09-4693-9c64-1e793eeb3b2a" />
+
+Добавим ещё синхронизацию основного хоста с `GCP Storage` и выполним распараллеливание:
+
+```bash
+#!/bin/bash
+RSYNC_PARAMS=$1
+LOCAL_DIR=$2
+REMOTE_DIR=$3
+SSH_TARGET=$4
+RCLONE_CMD=$5
+
+if [[ $# -ne 5 ]]; then
+    echo "Please provides at least 5 parametres"
+    echo "Using: $0 <rsync_params> <local_dir> <remote_dir> <ssh_target> <rclone_cmd>"
+    exit 1
+fi
+
+if [[ -z "$RSYNC_PARAMS" ]]; then
+    echo "Please provide rsync parametres. It will be -avzu"
+    exit 1
+fi
+
+if [[ ! -d "$LOCAL_DIR" ]]; then
+    echo "Pplease provide local directory..."
+    exit 1
+fi
+
+if [[ -z "$REMOTE_DIR" ]]; then
+   echo "Please provide remote directory..."
+
+if [[ -z "$SSH_TARGET" ]]; then
+    echo "Please provide remote host"
+    exit 1
+fi
+
+if [[ -z "$RCLONE_CMD" ]]; then 
+    echo "Please provide cmd reclone"
+    exit 1
+fi
+
+printf "\n"
+
+if ! ssh "$SSH_TARGET" "mkdir -p '$REMOTE_DIR'"; then
+   echo "Errors: Failed to create remote directory $REMOTE_DIR"
+   exit 1
+fi
+printf "\n"
+
+echo "Rsync parameters: $RSYNC_PARAMS"
+echo "==============================="
+echo "Local directory: $LOCAL_DIR"
+echo "==============================="
+echo "Remote diectory: $REMOTE_DIR"
+echo "==============================="
+echo "Remote host: $SSH_TARGET"
+echo "==============================="
+echo "Rclone command line: $RCLONE_CMD"
+echo "==============================="
+printf "\n"
+
+echo "Starting rsync ..."
+if rsync $RSYNC_PARAMS "$LOCAL_DIR" "$SSH_TARGET":"$REMOTE_DIR"; then
+    echo "Rsync completed successfully"
+else
+    echo "Rsync didn't completed successfully"
+    exit 1
+fi
+
+echo "Starting parallel sync to GCP ..."
+printf "\n"
+echo "Starting local sync to GCP ..."
+rclone "$RCLONE_CMD" "$LOCAL_DIR" ilya_bet:synchronization -P &
+LOCAL_PID=$!
+
+echo "Starting remote sync to GCP ..."
+ssh "$SSH_TARGET" "rclone $RCLONE_CMD $REMOTE_DIR ilya_bet:synchronization -P" &
+REMOTE_PID=$!
+
+wait $LOCAL_PID
+LOCAL_EXIT=$?
+wait $REMOTE_PID
+REMOTE_EXIT=$?
+
+if [[ $LOCAL_EXIT -eq 0 ]]; then
+    echo "Local sync completed successfully"
+else
+    echo "Local sync failed"
+fi
+
+if [[ $REMOTE_EXIT -eq 0 ]]; then
+    echo "Remote sync completed successfully"
+else
+    echo "Remote sync failed"
+fi
+```
+Проверим в терминале:
+
+<img width="728" height="433" alt="image" src="https://github.com/user-attachments/assets/856afb05-568e-433c-bcfb-09512724cefe" />
+<img width="731" height="344" alt="image" src="https://github.com/user-attachments/assets/a5b7ce39-18e3-4628-99fe-43372ac608be" />
 
 Чтобы процесс выполнялся автоматически пропишем в `cron` следующее правило:
 
 ```bash
 # Отредактируем файл для расписания задач
 crontab -e
-# 
+# Каждый полчаса будем выполнять скрипт и записывать результат в логи
+*/30 * * * * /home/bet/sync_all.sh "-avzu" "/home/bet/ilya_bet_sync/" "/home/remote/ilya_bet_backup/" "remote@172.20.10.5" "sync" >> /home/bet/sync_log 2>&1
 ```
 
  
