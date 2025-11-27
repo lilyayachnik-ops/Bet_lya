@@ -120,3 +120,51 @@ done
 Проверим в терминале:
 
 <img width="999" height="567" alt="image" src="https://github.com/user-attachments/assets/3ee9951a-1171-4224-bff1-10f65074d60f" />
+
+Скрипт для генерации:
+
+```bash
+#!/bin/bash
+
+# Create directories for testing
+# -p flag prevents errors if directories already exist
+mkdir -p mytexts myreports "logs_system"
+
+# Array of fruit names to use for generating random content
+fruits=("orange" "apple" "banana" "melon" "lemon")
+
+# Function to generate files with fruit content
+# Takes directory name as parameter
+generate_files() {
+    # Local variable to store directory name (only visible within function)
+    local dir=$1
+    
+    # Loop to create 4 files in each directory
+    for i in {1..4}; do
+        # Construct file path: directory/file1.txt, directory/file2.txt, etc.
+        file="$dir/file$i.txt"
+        
+        # Create file with initial header line (overwrite if exists)
+        echo "This is file $i in directory $dir." > "$file"
+        
+        # Add 5 random fruit-related lines to the file
+        for j in {1..5}; do
+            # Select random fruit from array
+            # $RANDOM generates random number, % gives remainder when divided by array length
+            # This ensures index stays within array bounds (0-4)
+            fruit=${fruits[$RANDOM % ${#fruits[@]}]}
+            
+            # Append fruit line to file
+            echo "Fruit line $j: I really like $fruit." >> "$file"
+        done
+    done
+}
+
+# Generate files in each directory by calling the function
+generate_files "mytexts"
+generate_files "myreports" 
+generate_files "logs_system"
+
+# Print success message
+echo "Folders and files with fruit content have been created."
+```
