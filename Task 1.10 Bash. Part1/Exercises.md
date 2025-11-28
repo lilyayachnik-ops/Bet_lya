@@ -168,3 +168,42 @@ generate_files "logs_system"
 # Print success message
 echo "Folders and files with fruit content have been created."
 ```
+
+У нас есть лог-файл, имитирующий логи сервера. Необходимо извлечь все IP-адреса, с которых произошел успешный вход (код ответа 200). Нужно извлечь все уникальные пользователи (usernames), которые пытались авторизоваться, но получили ошибку (код ответа 403), то есть написать Bash-скрипт, который:
+
+1) Находит все IP-адреса с кодом статуса 200.
+
+2) Находит всех уникальных пользователей, у которых был статус 403.
+
+Пример вывода `Bash`-скрипта:
+
+```bash
+Successful logins (IP addresses):
+192.168.1.10
+172.16.0.1
+10.0.0.5
+
+Users with failed logins:
+johndoe
+alice
+charlie
+```
+
+Вот наш `Bash`-скрипта:
+
+```bash
+#!/bin/bash
+
+echo "Successful logins (IP addresses):"
+awk '/status=200/{print $5}' server.log | cut -d= -f2 | sort -u
+
+printf "\n"
+echo "Users with failed logins:"
+awk '/status=403/{print $4}' server.log | cut -d= -f2 | sort -u
+```
+
+Проверим в терминале:
+
+<img width="522" height="200" alt="image" src="https://github.com/user-attachments/assets/e273a818-d041-4297-b1d2-5c75a68fc020" />
+
+
