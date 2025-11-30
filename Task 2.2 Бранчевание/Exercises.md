@@ -57,8 +57,8 @@ vim nginx.conf
 Закоммитим внесённые изменения:
 
 ```bash
-git add nginx.confg
-git commit -m "Changed worker_connection to 16384 in nginx and enabled"
+git add nginx.conf
+git commit -m "Changed worker_connection to 16384 in nginx.conf"
 ```
 
 Покажем в терминале:
@@ -95,7 +95,7 @@ git log
 ```bash
 git checkout feature/new-site
 mkdir -p conf.d
-cp /etc/nginx/sites-available/default ~/develop-task1/conf.d/mysite.domain.com.conf
+cp /etc/nginx/sites-available/default ~/devops-task1/conf.d/mysite.domain.com.conf
 ```
 
 Покажем в терминале:
