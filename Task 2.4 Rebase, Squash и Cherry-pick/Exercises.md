@@ -51,6 +51,18 @@ git log --oneline --graph feature
 
 <img width="885" height="183" alt="image" src="https://github.com/user-attachments/assets/7dad9ea5-bca5-4960-834c-6d476f5a122a" />
 
+```bash
+git remote add greb https://gitlab.com/lilyayachnik/git-rebase.git
+# Отправить все ветки удаленного репозитория и сделать их отслеживаемыми
+git push -u greb --all
+```
+
+Покажем в терминале:
+
+<img width="883" height="44" alt="image" src="https://github.com/user-attachments/assets/9f57028d-eb82-4e25-9fee-47c143589e58" />
+<img width="885" height="523" alt="image" src="https://github.com/user-attachments/assets/849db2e3-fffe-440d-a07d-6f8619f6f8c4" />
+
+
 
 
 
