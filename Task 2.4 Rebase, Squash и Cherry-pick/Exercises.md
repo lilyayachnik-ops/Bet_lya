@@ -63,6 +63,11 @@ git push -u greb --all
 <img width="885" height="523" alt="image" src="https://github.com/user-attachments/assets/849db2e3-fffe-440d-a07d-6f8619f6f8c4" />
 
 
+Клонируй репозиторий: `https://gitlab.com/andrew1test-group/git-squash.git`. Просмотри историю коммитов в ветке `main`. Объедини все `FIX`-коммиты c родительским `(Simplified sum function)` в один коммит. Создай репозиторий в своем аккаунте и загрузите в него получившийся репозиторий. 
+
+```bash
+
+```
 
 
 
