@@ -171,5 +171,270 @@ main "$@"
 <img width="894" height="618" alt="image" src="https://github.com/user-attachments/assets/3feeae58-4cd2-411d-b698-d560c8ee04af" />
 <img width="893" height="476" alt="image" src="https://github.com/user-attachments/assets/9b6f740c-552e-4d5b-9b4a-48ff227e6e1e" />
 
+Узнать размеры всех файлов и папок в директории `/etc`. Далее отсортировать вывод так, чтобы показывало только 10 самых больших файлов:
+
+```bash
+#!/bin/bash
+
+# Function to find top largest files
+find_largest_files() {
+        local directory="$1"
+        local count="$2"
+
+        echo "Script is running ..."
+        printf "\n"
+        echo "Top $count largest files in '$directory':"
+        echo "========================================="
+        printf "\n"
+
+        sudo find "$directory" -type f -exec du -h {} \; | sort -rh | head -n "$count" | awk '{print $0; print "--------"}'
+
+}
+
+show_help() {
+        echo "Usage: $0 -d DIRECTORY [-c COUNT]"
+        printf "\n"
+        echo "Options:"
+        echo "-d, --directory DIR Directory to scan"
+        echo "-c, --count NUM Number of files to show (default: 10)"
+        echo "-h, --help Show this help message"
+        printf "\n"
+        echo "Examples:"
+        echo "$0 -d /etc"
+        echo "$0 --directory /var/log --count 20"
+        echo "$0 -d /home -c 5"
+        exit 0
+}
+
+main() {
+        local directory=""
+        local count=10
+
+        # Parse command line arguments
+        while [[ $# -gt 0 ]]; do
+                case $1 in
+                        -d|--directory)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                       echo "Error: -d requires a directory path"
+                                       exit 1
+                                fi
+                                directory="$2"
+                                shift 2
+                                ;;
+
+                        -c|--count)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                       echo "Error: -c requires a numeric value"
+                                       exit 1
+                                elif ! [[ "$2" =~ ^[0-9]+$ ]]; then
+                                       echo "Error: Count must be a positive number"
+                                       exit 1
+                                fi
+                                count="$2"
+                                shift 2
+                                ;;
+
+                        -h|--help)
+                                show_help
+                                ;;
+
+                        *)
+                                echo "Unknown option: $1"
+                                echo "Use $0 --help for usage information"
+                                exit 1
+                                ;;
+                esac
+        done
+
+        if [[ -z "$directory" ]]; then
+                echo "Error: Directory not specified (use -d option)"
+                echo "Use $0 --help for usage information"
+                exit 1
+        fi
+
+        # Check if directory exists
+        if [[ ! -d "$directory" ]]; then
+                echo "Error: Directory '$directory' does not exist"
+                exit 1
+        fi
+
+        # Check if user has permission to access directory
+        if [[ ! -r "$directory" ]]; then
+                echo "Warning: Limited access to directory '$directory'"
+                echo "Some files may not be accessible"
+                printf "\n"
+        fi
+
+        # Call the main function
+        find_largest_files "$directory" "$count"
+}
+
+# Execute main function
+main "$@"
+```
+
+Проверим в терминале:
+
+<img width="894" height="544" alt="image" src="https://github.com/user-attachments/assets/f4fd7d64-0119-442d-ac0b-eef0e988b67f" />
+<img width="894" height="522" alt="image" src="https://github.com/user-attachments/assets/1b4e38b9-a120-4a7d-88b4-f3f1ca6b71b4" />
+<img width="893" height="543" alt="image" src="https://github.com/user-attachments/assets/a277db7c-fc05-4017-bcac-8a913f7661d6" />
+
+Нам нужно создать файл со следующим содержанием, сделаем это с помощью команды `cat > nsa.txt`:
+
+```bash
+NDS/A
+NSDA
+ANS!D
+NAD/A
+```
+
+Вывести строки `NDS/A` и `NAD/A` из файла, используя `awk` и `sed`:
+
+```bash
+#!/bin/bash
+
+# Function to find lines using awk
+# awk compares each entire line ($0) with search values
+find_with_awk() {
+        # Declare local variable for filename
+        local filename="$1"
+        echo "Using awk:"
+        awk '$0 == "NDS/A" || $0 == "NAD/A"' "$filename"
+}
+
+# Function to find lines using sed
+# sed uses regular expressions for searching
+find_with_sed() {
+        local filename="$1"
+        echo "Using sed:"
+        sed -n '/NDS\/A/p; /NAD\/A/p' "$filename"
+}
+
+# Function to display script usage help
+show_help() {
+        echo "Usage: $0 -f FILE [-t TOOL]"
+        printf "\n"
+        echo "Options:"
+        echo "-f, --file FILE Input file name"
+        echo "-t, --tool NUM Tool to use: 1 for awk, 2 for sed"
+        echo "-h, --help Show this help message"
+        printf "\n"
+        echo "Examples:"
+        echo "$0 -f nsa.txt #Will ask for tool choice"
+        echo "$0 --file data.txt -t 1 #Use awk automatically"
+        echo "$0 -f input.txt --tool 2 #Use sed automatically"
+        exit 0
+}
+
+# Function to display file contents
+show_file_contents() {
+        local filename="$1"
+        echo "Contents of file $filename:"
+        echo "==========================="
+        cat "$filename"
+        printf "\n"
+}
+
+#  Main function of the script
+main() {
+        # Declare local variables
+        local filename=""
+        local tool=""
+        local choice=""
+        # Process command line arguments
+        while [[ $# -gt 0 ]]; do
+                case $1 in
+                        # Process -f or --file parameter
+                        -f|--file)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: -f requires a file name"
+                                        exit 1
+                                fi
+                                filename="$2"
+                                shift 2
+                                ;;
+                        # Process -t or --tool parameter
+                        -t|--tool)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: -t requires a value (1 for awk, 2 for sed)"
+                                        exit 1
+                                # Check that value is 1 or 2
+                                elif ! [[ "$2" =~ ^[12]$ ]]; then
+                                        echo "Error: Tool must be 1 (awk) or 2 (sed)"
+                                        exit 1
+                                fi
+                                tool="$2"
+                                shift 2
+                                ;;
+                        # Process help parameter
+                        -h|--help)
+                                show_help
+                                ;;
+
+                        # Process unknown parameter
+                        *)
+                                echo "Unknown parameter: $1"
+                                echo "Use $0 --help for usage information"
+                                exit 1
+                                ;;
+                esac
+        done
+
+        # Check if filename was specified
+        if [[ -z "$filename" ]]; then
+                echo "Error: File not specified (use -f option)"
+                exit 1
+        fi
+
+        # Check if file exists
+        if [[ ! -f "$filename" ]]; then
+               echo "Error: File '$filename' does not exist"
+               exit 1
+        fi
+
+        show_file_contents "$filename"
+
+        # if tool wasn't specified via -t parameter, ask user
+        if [[ -z "$tool" ]]; then
+                echo "Please specify how to find the words. Using awk(1) or sed(2)."
+                read -r choice
+
+                # Validate user input (should be 1 or 2)
+                if ! [[ "$choice" =~ ^[12]$ ]]; then
+                       echo "Wrong choice. Using default: awk"
+                       choice=1
+                fi
+        else
+               choice="$tool"
+        fi
+        printf "\n"
+        echo "The required lines:"
+        echo "==================="
+
+        # Perform search based on selected tool
+        case $choice in
+                1)
+                        find_with_awk "$filename"
+                        ;;
+                2)
+                        find_with_sed "$filename"
+                        ;;
+                *)
+                        echo "Invalid tool choice"
+                        exit 1
+                        ;;
+        esac
+}
+
+main "$@"
+```
+
+Проверим в терминале:
+
+<img width="894" height="81" alt="image" src="https://github.com/user-attachments/assets/40c7eb27-48a0-4780-9959-77c5a69444c5" />
+<img width="893" height="124" alt="image" src="https://github.com/user-attachments/assets/a3f828bb-d297-485e-ab98-c7d6f82b7957" />
+<img width="887" height="560" alt="image" src="https://github.com/user-attachments/assets/b48670a5-c5d9-4910-b3ef-4c384a017f69" />
+<img width="893" height="644" alt="image" src="https://github.com/user-attachments/assets/0b4d8445-c9f1-46ae-bf93-ac4851cb8622" />
+<img width="891" height="346" alt="image" src="https://github.com/user-attachments/assets/b0cb361c-63d3-40f5-9362-bb04b38cc735" />
 
 
