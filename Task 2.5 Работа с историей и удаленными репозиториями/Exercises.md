@@ -1,4 +1,4 @@
-<img width="918" height="131" alt="image" src="https://github.com/user-attachments/assets/8adc43cd-c86c-4cce-a460-c806b5f4b507" /># Checkpoints
+# Checkpoints
 
 Клонируй репозиторий: `https://gitlab.com/andrew1test-group/git-squash.git`. Создай в своем аккаунте репозиторий `devops-task-force`. Залей весь репозиторий `git-squash` в `devops-task-force`. После этого в ветке `main` используй `squash` для объединения всех коммитов в один. После этого попробуй выполнить `git push` в ваш репозиторий. Сохрани текст ошибки. Выполни `git push --force` в ваш репозиторий.
 
@@ -208,3 +208,5 @@ git push -u merge --all
 Проверим себя:
 
 <img width="935" height="395" alt="image" src="https://github.com/user-attachments/assets/f7bee11f-53a6-4638-9f35-7b03788ca778" />
+
+Выполни `fork` репозитория `https://gitlab.com/andrew1test-group/git-checkout.git`. Переключись в ветку `feature` и добавь в нее новый файл с интересной информацией отдельным коммитом. Создай `pull request` в основной проект: `git-checkout`.
