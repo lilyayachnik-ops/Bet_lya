@@ -165,3 +165,20 @@ git push --force rebase-pull develop
 Так как прямые коммиты в ветку `master` будут запрещены настройками удаленного репозитория, для работы над каждой задачей в проекте необходимо будет создать отдельную ветку, а потом на основании нее `Pull request` в `GitHub` или `Merge request` в `Gitlab`.
 
 `Pull request`/`Merge Request` — это запрос на слияние вашей ветки в ветку `master`.
+
+Клонируй репозиторий: `https://gitlab.com/andrew1test-group/git-merge.git`. Создай новый репозиторий у себя на `gitlab` и загрузи туда репозиторий. Создай `pull request` из ветки `feature` в ветку `development`. Посмотри, как отображаются конфликты в интерфейсе `gitlab`.
+
+```bash
+git clone https://gitlab.com/andrew1test-group/git-merge.git
+git remote add  merge https://lilyayachnik/git-merge.git
+git push -u merge --all
+```
+
+Покажем в терминале:
+
+<img width="886" height="42" alt="image" src="https://github.com/user-attachments/assets/e887dd71-e6a8-4fdb-b983-48f2f1c2500e" />
+<img width="888" height="505" alt="image" src="https://github.com/user-attachments/assets/c6f57b84-b09c-4c93-a064-6bfa69c023a2" />
+
+Создадим `Merge request`. Подробно описывать не буду, давайте сразу проделаем шаги и увидим, как отображаются конфликты:
+
+
