@@ -1,4 +1,4 @@
-# Checkpoints
+<img width="918" height="131" alt="image" src="https://github.com/user-attachments/assets/8adc43cd-c86c-4cce-a460-c806b5f4b507" /># Checkpoints
 
 Клонируй репозиторий: `https://gitlab.com/andrew1test-group/git-squash.git`. Создай в своем аккаунте репозиторий `devops-task-force`. Залей весь репозиторий `git-squash` в `devops-task-force`. После этого в ветке `main` используй `squash` для объединения всех коммитов в один. После этого попробуй выполнить `git push` в ваш репозиторий. Сохрани текст ошибки. Выполни `git push --force` в ваш репозиторий.
 
@@ -181,4 +181,30 @@ git push -u merge --all
 
 Создадим `Merge request`. Подробно описывать не буду, давайте сразу проделаем шаги и увидим, как отображаются конфликты:
 
+<img width="939" height="656" alt="image" src="https://github.com/user-attachments/assets/60557bf4-da02-4064-8e9d-b7e4511129bb" />
+<img width="930" height="753" alt="image" src="https://github.com/user-attachments/assets/3ac7484a-74f3-4a4f-ac3f-5e4454ed9972" />
 
+Появились подсветка `Something went wrong. Please try again` и `Merge blocked: 1 check failed. Merge conflicts must be resolved`.
+
+Решить возникшей конфликт можно двумя способами: `Resolve locally` и `Resolve conflicts`. Выберем `Resolve conflicts`:
+
+<img width="936" height="864" alt="image" src="https://github.com/user-attachments/assets/502f88ed-47e4-452d-8faa-a4cf1704371c" />
+<img width="920" height="96" alt="image" src="https://github.com/user-attachments/assets/e2459883-979d-4850-85b0-16a6169886fc" />
+
+Конфликт возник в файле `main.go`. Можно выбрать решение: `Use ours`, которое принадлежит ветке `development`, или `Use theirs`, которое принадлежит ветке `feature`. Выберем `Use ours` и нажмем `Commit to source branch`:
+
+<img width="920" height="769" alt="image" src="https://github.com/user-attachments/assets/fa2aa3e1-2582-49bd-b99a-cb9102004799" />
+
+Далее:
+
+<img width="936" height="861" alt="image" src="https://github.com/user-attachments/assets/bf9a114a-ec27-4b6c-90bd-1417a688f37b" />
+<img width="916" height="801" alt="image" src="https://github.com/user-attachments/assets/96419671-3a94-4fd6-bc98-1d7f62db8529" />
+<img width="918" height="131" alt="image" src="https://github.com/user-attachments/assets/395b16dc-7e0f-4ec0-95c6-ce2bd7030ee5" />
+
+Нажмем `Merge`:
+
+<img width="917" height="482" alt="image" src="https://github.com/user-attachments/assets/38ea51a8-177c-4935-b6c0-ee270db46a02" />
+
+Проверим себя:
+
+<img width="935" height="395" alt="image" src="https://github.com/user-attachments/assets/f7bee11f-53a6-4638-9f35-7b03788ca778" />
