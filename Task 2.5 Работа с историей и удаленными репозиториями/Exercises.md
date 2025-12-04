@@ -210,3 +210,6 @@ git push -u merge --all
 <img width="935" height="395" alt="image" src="https://github.com/user-attachments/assets/f7bee11f-53a6-4638-9f35-7b03788ca778" />
 
 Выполни `fork` репозитория `https://gitlab.com/andrew1test-group/git-checkout.git`. Переключись в ветку `feature` и добавь в нее новый файл с интересной информацией отдельным коммитом. Создай `pull request` в основной проект: `git-checkout`.
+
+<img width="939" height="192" alt="image" src="https://github.com/user-attachments/assets/5969306a-4053-4ea9-a45c-1ffe5170fd84" />
+<img width="936" height="865" alt="image" src="https://github.com/user-attachments/assets/c7ebd2df-3bb5-44f7-874e-171cdda28d54" />
