@@ -211,5 +211,46 @@ git push -u merge --all
 
 Выполни `fork` репозитория `https://gitlab.com/andrew1test-group/git-checkout.git`. Переключись в ветку `feature` и добавь в нее новый файл с интересной информацией отдельным коммитом. Создай `pull request` в основной проект: `git-checkout`.
 
+Перейдем на данный репозиторий `https://gitlab.com/andrew1test-group/git-checkout.git`. Нажмем кнопку `Fork`:
+
 <img width="939" height="192" alt="image" src="https://github.com/user-attachments/assets/5969306a-4053-4ea9-a45c-1ffe5170fd84" />
+
+Мы попадем на следующий шаг, где выбираем `namespace` и нажимаем кнопку `Forc project`:
+
 <img width="936" height="865" alt="image" src="https://github.com/user-attachments/assets/c7ebd2df-3bb5-44f7-874e-171cdda28d54" />
+
+Далее в терминале выполним следующие команды:
+
+```bash
+git clone https://gitlab.com/lilyayachnik/git-checkout
+git checkout feature
+vim interesting_info.txt
+cat interesting_info.txt
+git add interesting_info.txt
+git commit -m "Add file with interesting Git facts"
+git push origin feature
+```
+
+Покажем в терминале:
+
+<img width="809" height="304" alt="image" src="https://github.com/user-attachments/assets/48b2c3f2-d0a8-4980-811a-aa81edd48ab7" />
+<img width="803" height="103" alt="image" src="https://github.com/user-attachments/assets/d518c8bb-ccc7-4bf2-be64-90f28643f104" />
+<img width="811" height="25" alt="image" src="https://github.com/user-attachments/assets/c7d50577-53f6-47cc-b259-68dd572a01ad" />
+<img width="808" height="442" alt="image" src="https://github.com/user-attachments/assets/19fa12a3-c423-43ed-a9cc-be7b35e6fcb2" />
+
+Следующим шагом создадим `Merge request`:
+<img width="913" height="99" alt="image" src="https://github.com/user-attachments/assets/1a9f32ca-c21f-49a0-997e-7b91b2a0eb9c" />
+
+Нажимаем кнопку `Create merge request`:
+<img width="947" height="815" alt="image" src="https://github.com/user-attachments/assets/20338e2b-c8c6-42cf-aedf-2c343b2c7348" />
+<img width="930" height="155" alt="image" src="https://github.com/user-attachments/assets/ac4b1fb0-577d-449a-af71-9a6dd9708f28" />
+
+Всё получилось. Ждём одобрения нашего `Pull request`:
+
+<img width="940" height="859" alt="image" src="https://github.com/user-attachments/assets/f497f4aa-fcb0-4911-8351-dd48889bfbe2" />
+<img width="921" height="96" alt="image" src="https://github.com/user-attachments/assets/a5d0dca6-f5e4-4a1e-a719-5daa289e00de" />
+
+
+
+
+
