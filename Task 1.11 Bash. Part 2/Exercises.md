@@ -437,4 +437,151 @@ main "$@"
 <img width="893" height="644" alt="image" src="https://github.com/user-attachments/assets/0b4d8445-c9f1-46ae-bf93-ac4851cb8622" />
 <img width="891" height="346" alt="image" src="https://github.com/user-attachments/assets/b0cb361c-63d3-40f5-9362-bb04b38cc735" />
 
+Вывести пронумерованные строчки из /etc/passwd, в которых есть оболочка /bin/bash, и перенаправить вывод в файл.
+
+Так как у меня нет изначально `/bin/sh`, то я заменю `/bin/bash` на `/bin/sh`, а затем наоборот. Так как нам нужно проводить изменения в файле `/etc/passwd`, то нам нужно сделать его копию `~/passwd.bak`, поскольку этот файл — содержит список пользовательских учётных записей. Является первым и основным источником информации о правах пользователя ОС:
+
+```bash
+#!/bin/bash
+
+# Default values
+FILE_SAVE=""
+BACKUP_FILE="passwd.bak"
+VERBOSE=false
+
+# Parsed named parametres
+
+while [[ $# -gt 0 ]]; do
+        case $1 in
+                -o|--output)
+                        FILE_SAVE="$2"
+                        shift 2
+                        ;;
+                -b|--backup)
+                        BACKUP_FILE="$2"
+                        shift 2
+                        ;;
+                -v|--verbose)
+                        VERBOSE=true
+                        shift
+                        ;;
+                -h|--help)
+                        echo "Usage: $0 -o <output_file> [options]"
+                        echo "Options:"
+                        echo "-o, --output FILE Output file for results"
+                        echo "-b, --backup FILE Backup file name (default: passwd.bak)"
+                        echo "-v, --verbose Enable verbose output"
+                        echo "-h, --help Show this help message"
+                        exit 0
+                        ;;
+                *)
+                        echo "Unknown parameter: $1"
+                        echo "Use $0 -h for help"
+                        exit 1
+                        ;;
+        esac
+done
+
+# Validation
+check() {
+        if [[ -z "$FILE_SAVE" ]]; then
+                echo "Error: Output file is requeired!"
+                echo "Usage: $0 -o <output_file>"
+                exit 1
+        fi
+
+        if [[ ! -f "/etc/passwd" ]]; then
+                echo "Error: /etc/passwd file not found!"
+                exit 1
+        fi
+}
+
+# Create backup
+backup() {
+        echo "Copying /etc/passwd to '$BACKUP_FILE'..."
+        sudo cp /etc/passwd "$BACKUP_FILE"
+
+        if [[ $? -ne 0 ]]; then
+                echo "Error: Backup failed!"
+                exit 1
+        else
+                echo "Backup created successfully"
+        fi
+}
+
+# Find shell users
+find_shell() {
+        local shell_name="$1"
+        local output_file="$2"
+        local description="$3"
+
+        if [[ "$VERBOSE" = true ]]; then
+                echo "Searching for: $description"
+        fi
+
+        # grep searches lines, -n adds line numbers
+        grep -n "$shell_name" "$BACKUP_FILE" > "$output_file"
+
+        if [[ -s "$output_file" ]]; then
+                local count=$(wc -l < "$output_file")
+                echo "Found $count lines with $shell_name"
+
+                if [[ "$VERBOSE" = true ]]; then
+                        echo "Contents of '$output_file':"
+                        cat "$output_file"
+                fi
+        else
+                echo "No lines found with $shell_name"
+        fi
+        printf "\n"
+}
+
+# Replace shell
+replace() {
+        local from="$1"
+        local to="$2"
+
+        if [[ "$VERBOSE" = true ]]; then
+                echo "Executing: sed -i 's|$from|$to|g' '$BACKUP_FILE'"
+        fi
+
+        echo "Replacing $from with $to"
+        sed -i "s|$from|$to|g" "$BACKUP_FILE"
+}
+
+# Validate parameters
+check
+
+# Create backup
+backup
+
+# Find /bin/bash and save results
+find_shell "/bin/bash" "$FILE_SAVE" "users with /bin/bash"
+
+# Replace bash with sh
+replace "/bin/bash" "/bin/sh"
+
+# Find /bin/sh after replacement
+find_shell  "/bin/sh" "${FILE_SAVE}_sh" "users with /bin/sh (after replacement)"
+
+# Restore original
+replace "/bin/sh" "/bin/bash"
+
+# Verify restoration
+find_shell "/bin/bash" "${FILE_SAVE}_final" "users with /bin/bash (after restoration)"
+
+echo "=== SUMMARY ==="
+ls -la "$FILE_SAVE"* 2>/dev/null || echo "No output files found"
+printf "\n"
+echo "Backup file: '$BACKUP_FILE'"
+```
+
+Покажем в терминале:
+
+<img width="811" height="207" alt="image" src="https://github.com/user-attachments/assets/2ac2da1c-9bde-4eb1-9bf4-f31150dde15b" />
+<img width="809" height="339" alt="image" src="https://github.com/user-attachments/assets/7ebbade1-b6ea-48df-89af-5329b6458885" />
+<img width="811" height="344" alt="image" src="https://github.com/user-attachments/assets/335e31b7-8bbd-4b0f-861e-7a858eea6724" />
+<img width="808" height="546" alt="image" src="https://github.com/user-attachments/assets/77b3b560-7044-4609-8829-e6b08ef2e908" />
+<img width="811" height="119" alt="image" src="https://github.com/user-attachments/assets/15f8ffaf-97bf-4bae-8bca-f811b2a5cbc6" />
+
 
