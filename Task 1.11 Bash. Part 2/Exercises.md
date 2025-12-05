@@ -855,4 +855,143 @@ main "$@"
 <img width="811" height="289" alt="image" src="https://github.com/user-attachments/assets/7769aeee-40b6-4f6e-ae7d-14104463e7cd" />
 <img width="809" height="424" alt="image" src="https://github.com/user-attachments/assets/2bbf7f4a-ef39-45aa-bdc0-eb4061ef43b6" />
 
+У нас есть лог-файл, имитирующий логи сервера. Необходимо извлечь все IP-адреса, с которых произошел успешный вход (код ответа 200). Нужно извлечь все уникальные пользователи (usernames), которые пытались авторизоваться, но получили ошибку (код ответа 403), то есть написать Bash-скрипт, который:
 
+1) Находит все IP-адреса с кодом статуса 200.
+
+2) Находит всех уникальных пользователей, у которых был статус 403.
+
+Пример вывода `Bash`-скрипта:
+
+```bash
+Successful logins (IP addresses):
+192.168.1.10
+172.16.0.1
+10.0.0.5
+
+Users with failed logins:
+johndoe
+alice
+charlie
+```
+
+Наш код:
+
+```bash
+#!/bin/bash
+
+# Global variables
+LOG_FILE=""
+SHOW_SUCCESS=true
+SHOW_FAILED=true
+
+# Function to display usage
+show_usage() {
+        echo "Usage: $0 [-f|--file <log_file>] [--no-success] [--no-failed] [-h|--help]"
+        printf "\n"
+        echo "Options:"
+        echo "-f, --file Log file to analyze"
+        echo "--no-success Don't show successful logins"
+        echo "--no-failed Don't show failed logins"
+        echo "-h, --help Show this help message"
+        printf "\n"
+        echo "Examples:"
+        echo "$0 -f server.log"
+        echo "$0 --file server.log --no-failed"
+        echo "$0 -f server.log --no-success"
+        exit 1
+}
+
+# Function to validate arguments
+validate_arguments() {
+        # Check if log file is specified
+        if [[ -z "$LOG_FILE" ]]; then
+                echo "Error: Please specify a log file"
+                show_usage
+        fi
+
+        # Check if log file exists
+        if [[ ! -f "$LOG_FILE" ]]; then
+                echo "Error: Log file '$LOG_FILE' does not exist or is not a file"
+                exit 1
+        fi
+}
+
+# Function to parse command line arguments
+parse_arguments() {
+        # Check if any arguments provided
+        if [[ $# -eq 0 ]]; then
+                show_usage
+        fi
+
+        while [[ $# -gt 0 ]]; do
+                case "$1" in
+                        -f|--file)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: $1 requires a log file path"
+                                        show_usage
+                                fi
+                                LOG_FILE="$2"
+                                shift 2
+                                ;;
+                        --no-success)
+                                SHOW_SUCCESS=false
+                                shift
+                                ;;
+                        --no-failed)
+                                SHOW_FAILED=false
+                                shift
+                                ;;
+                        -h|--help)
+                                show_usage
+                                ;;
+                        *)
+                                echo "Error: Unexpected argument: $1"
+                                exit 1
+                                ;;
+                esac
+        done
+}
+
+# Function to extract successful logins (status 200)
+show_successful_logins() {
+        echo "Successful logins:"
+        awk '/status=200/{print $5}' "$LOG_FILE" | cut -d= -f2 | sort -u
+        printf "\n"
+}
+
+# Function to extract failed logins (status 403)
+show_failed_logins() {
+        echo "Users with failed logins:"
+        awk '/status=403/{print $5}' "$LOG_FILE" | cut -d= -f2 | sort -u
+        printf "\n"
+}
+
+main() {
+        parse_arguments "$@"
+        validate_arguments
+
+        # Show successful logins if requested
+        if [[ "$SHOW_SUCCESS" = true ]]; then
+                show_successful_logins
+        fi
+
+        # Show failed logins if requested
+        if [[ "$SHOW_FAILED" = true ]]; then
+                show_failed_logins
+        fi
+
+        # If both are disabled, show message
+        if [[ "$SHOW_SUCCESS" = false ]] && [[ "$SHOW_FAILED" = false ]]; then
+                echo "Both successful and failed logins reporting are disabled."
+                echo "Use --help for usage informaion."
+        fi
+}
+
+main "$@"
+```
+
+Покажем в терминале:
+
+<img width="814" height="724" alt="image" src="https://github.com/user-attachments/assets/1b3682f6-c08b-4863-ad07-88d55198860d" />
+<img width="817" height="319" alt="image" src="https://github.com/user-attachments/assets/8621904d-f760-44e4-adab-ead69b343cb6" />
