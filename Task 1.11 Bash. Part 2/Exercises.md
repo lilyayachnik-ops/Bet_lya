@@ -584,4 +584,275 @@ echo "Backup file: '$BACKUP_FILE'"
 <img width="808" height="546" alt="image" src="https://github.com/user-attachments/assets/77b3b560-7044-4609-8829-e6b08ef2e908" />
 <img width="811" height="119" alt="image" src="https://github.com/user-attachments/assets/15f8ffaf-97bf-4bae-8bca-f811b2a5cbc6" />
 
+Нужно написать скрипт, выводящий в файл (имя файла задаётся пользователем в качестве первого аргумента командной строки) имена всех файлов с заданным расширением (третий аргумент командной строки) из заданного каталога (имя каталога задаётся пользователем в качестве второго аргумента командной строки):
+
+```bash
+#!/bin/bash
+
+FILE_NAME=""
+DIR_NAME=""
+EXTEN=""
+
+show_usage() {
+        echo "Usage: $0 [-o output_file] [-d directory] [-e extension]"
+        echo "$0 <output_file> <directory> <extension>"
+        exit 1
+}
+
+validate_arguments() {
+
+        # Check filename
+        if [[ -z "$FILE_NAME" ]]; then
+                echo "Error: Please enter the name of the file where we will save the result"
+                exit 1
+        fi
+
+        # Check directory name
+        if [[ -z "$DIR_NAME" ]]; then
+                echo "Error: Please enter the name of the directory where we will search"
+                exit 1
+        fi
+
+        # Check if directory exists
+        if [[ ! -d "$DIR_NAME" ]]; then
+                echo "Error: Directory '$DIR_NAME' does not exist or is not a directory"
+                exit 1
+        fi
+
+        # Check extension
+        if [[ -z "$EXTEN" ]]; then
+                echo "Error: Please enter the extension that we will search for in the files"
+                exit 1
+        fi
+}
+
+parse_arguments() {
+
+        # If first argument is not an option, treat as positional arguments
+        if [[ $# -eq 3 ]] && [[ "$1" != -* ]]; then
+                FILE_NAME="$1"
+                DIR_NAME="$2"
+                EXTEN="$3"
+                return
+        fi
+
+        # Otherwise parse as named arguments
+        while [[ $# -gt 0 ]]; do
+                case "$1" in
+                        -o|--output)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: $1 requires a file path"
+                                        show_usage
+                                fi
+                                FILE_NAME="$2"
+                                shift 2
+                                ;;
+                        -d|--directory)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: $1 requires a directory path"
+                                        show_usage
+                                fi
+                                DIR_NAME="$2"
+                                shift 2
+                                ;;
+                        -e|--extension)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: $1 requires an extension"
+                                        show_usage
+                                fi
+                                EXTEN="$2"
+                                shift 2
+                                ;;
+                        -h|--help)
+                                show_usage
+                                ;;
+                        *)
+                                echo "Unknown option: $1"
+                                echo "Use $0 --help for usage information"
+                                exit 1
+                                ;;
+                esac
+        done
+}
+
+search_files() {
+        echo "Starting the search"
+        printf "\n"
+
+        if find "$DIR_NAME" -type f -name "*.${EXTEN}" > "$FILE_NAME"; then
+                echo "Search completed successfully"
+        else
+                echo "Search did not complete successfully"
+                exit 1
+        fi
+}
+show_results() {
+        printf "\n"
+        echo "Output the contents of the file"
+
+        if [[ -s "$FILE_NAME" ]]; then
+                cat "$FILE_NAME"
+        else
+                echo "No files found with extension .$EXTEN"
+        fi
+}
+
+main() {
+        parse_arguments "$@"
+        validate_arguments
+        search_files
+        show_results
+}
+
+main "$@"
+```
+
+Покажем в терминале:
+
+<img width="804" height="423" alt="image" src="https://github.com/user-attachments/assets/f00a417a-27d9-4c0f-b928-7e8329b2d6bd" />
+<img width="814" height="425" alt="image" src="https://github.com/user-attachments/assets/ec71f29d-225a-461a-b5af-9cb7d8a3c42f" />
+<img width="809" height="100" alt="image" src="https://github.com/user-attachments/assets/9af23530-fd1a-4a12-9030-a088fd46e9f9" />
+
+Написать скрипт для поиска заданной пользователем строки во всех файлах заданного каталога и всех его подкаталогах (строка и имя каталога задаются пользователем в качестве первого и второго аргумента командной строки). На консоль выводятся полный путь и имена файлов, в содержимом которых присутствует заданная строка, и их размер. Если к какому-либо каталогу нет доступа, необходимо вывести соответствующее сообщение и продолжить выполнение:
+
+```bash
+#!/bin/bash
+
+# Global variables
+SEARCH_STRING=""
+SEARCH_DIR=""
+
+# Function to display usage
+show_usage() {
+        echo "Usage: $0 [-s|--string <search_string>] [-d|--directory <directory>]"
+        echo "$0 <search_string> <directory>"
+        printf "\n"
+        echo "Options:"
+        echo "-s, --string String to search for"
+        echo "-d, --directory Directory to search in"
+        echo "-h, --help Show this help message"
+        exit 1
+}
+
+# Function to validate arguments
+validate_arguments() {
+        # Check if search string is not empty
+        if [[ -z "$SEARCH_STRING" ]]; then
+                echo "Error: Please enter the search string"
+                show_usage
+        fi
+
+        # Check if directory name is not empty
+        if [[ -z "$SEARCH_DIR" ]]; then
+                echo "Error: Please enter the name of the directory where we will search"
+                show_usage
+        fi
+
+        # Check if the directory actually exists
+        if [[ ! -d "$SEARCH_DIR" ]]; then
+                echo "Error: Directory '$SEARCH_DIR' does not exist or is not a directory"
+                exit 1
+        fi
+}
+
+# Function to parse command line arguments
+parse_arguments() {
+        # If first argument is not an option, treat as positional arguments
+        if [[ $# -eq 2 ]] && [[ "$1" != -* ]]; then
+                SEARCH_STRING="$1"
+                SEARCH_DIR="$2"
+                return
+        fi
+
+        # Otherwise parse as named arguments
+        while [[ $# -gt 0 ]]; do
+                case "$1" in
+                        -s|--string)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: $1 requires a search string"
+                                        show_usage
+                                fi
+                                SEARCH_STRING="$2"
+                                shift 2
+                                ;;
+                        -d|--directory)
+                                if [[ -z "$2" ]] || [[ "$2" == -* ]]; then
+                                        echo "Error: $1 requires a directory path"
+                                        show_usage
+                                fi
+                                SEARCH_DIR="$2"
+                                shift 2
+                                ;;
+                        -h|--help)
+                                show_usage
+                                exit 0
+                                ;;
+                        *)
+                                echo "Error: Unexpected argument '$1'"
+                                show_usage
+                                ;;
+                esac
+        done
+}
+
+# Function to process grep output line
+process_line() {
+        local line="$1"
+
+        # Check if the current line is a "Permission denied" error message
+        if [[ "$line" == *"Permission denied"* ]]; then
+                echo "No access: $line"
+        else
+                # If it's not an error, it's a found match
+                # Line format: "path/to/file:found_text"
+
+                # Extract file path
+                local file=$(echo "$line" | cut -d":" -f1)
+
+                # Get file size in bytes
+                local size=$(stat --printf='%s' "$file")
+
+                # Output information
+                echo "File: $file, Size: $size byte, String: ${line#*:}"
+        fi
+}
+
+# Function to search for string in files
+search_files() {
+        echo "Searching for string: '$SEARCH_STRING'"
+        echo "Directory: $SEARCH_DIR"
+        echo "====================================="
+
+        # Recursively search for the string in all files within the directory
+        # grep -r searches through all files in the specified directory and its subdirectories
+        # Results are passed line by line to the while loop
+        grep -r "$SEARCH_STRING" "$SEARCH_DIR" 2>/dev/null | while read -r line; do
+        process_line "$line"
+        done
+
+# Handle permission denied errors from grep
+grep -r "$SEARCH_STRING" "$SEARCH_DIR" | grep "Permission denied" | while read -r error_line; do
+echo "No access: $error_line" >&2
+done
+
+echo "==========================================="
+echo "Search completed"
+}
+
+main() {
+        parse_arguments "$@"
+        validate_arguments
+        search_files
+}
+
+main "$@"
+```
+
+Проверим в терминале:
+
+<img width="802" height="563" alt="image" src="https://github.com/user-attachments/assets/434df450-bf25-45a0-b2af-b7686df181e3" />
+<img width="809" height="583" alt="image" src="https://github.com/user-attachments/assets/ad16712b-544e-4f14-ac15-d23cec237553" />
+<img width="811" height="289" alt="image" src="https://github.com/user-attachments/assets/7769aeee-40b6-4f6e-ae7d-14104463e7cd" />
+<img width="809" height="424" alt="image" src="https://github.com/user-attachments/assets/2bbf7f4a-ef39-45aa-bdc0-eb4061ef43b6" />
+
 
