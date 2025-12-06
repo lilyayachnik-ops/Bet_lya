@@ -6,14 +6,19 @@
 mkdir -p gitflow
 cd gitflow
 git init
+echo "My project" > text.txt
+git add text.txt
+git commit -m "Initial commit"
+git checkout -b develop
+git checkout master
 echo "One" > file1.txt
 git add file1.txt
-git commit -m "Initial commit"
+git commit -m "The second commit"
 echo "File2" > file2.txt
 git add file2.txt
 git commit -m "Add file2"
-git checkout -b develop
-git merge master
+git checkout develop
+git merge master -m "Merge master into develop"
 echo "Dev feature" > dev.txt
 git add dev.txt
 git commit -m "Add dev feature"
@@ -27,22 +32,20 @@ git push -u flow --all
 
 Покажем в терминале:
 
-<img width="808" height="200" alt="image" src="https://github.com/user-attachments/assets/b18d3dd4-4e90-424e-9976-ac14854cc42d" />
-<img width="814" height="260" alt="image" src="https://github.com/user-attachments/assets/9601ffee-c3f1-409e-a428-666852153688" />
-<img width="809" height="46" alt="image" src="https://github.com/user-attachments/assets/98bb55af-c1b8-45da-a9a6-747e15dc99e5" />
-<img width="811" height="305" alt="image" src="https://github.com/user-attachments/assets/9cf647fb-1411-4beb-bb86-795b6ea24bf3" />
-<img width="809" height="587" alt="image" src="https://github.com/user-attachments/assets/37efd562-3640-4089-88ad-f3ea708141ec" />
-<img width="810" height="322" alt="image" src="https://github.com/user-attachments/assets/52537b1b-b0fc-4c4f-af26-6b7991666423" />
+<img width="815" height="543" alt="image" src="https://github.com/user-attachments/assets/989aa26a-cbcf-4d81-8bb7-3a82a3d47c86" />
+<img width="810" height="592" alt="image" src="https://github.com/user-attachments/assets/a75312a5-94a3-4763-82cc-7764234e73d3" />
+<img width="815" height="223" alt="image" src="https://github.com/user-attachments/assets/8d118115-ff43-485b-ae6e-58d774cc2518" />
+<img width="815" height="566" alt="image" src="https://github.com/user-attachments/assets/2bed1ddc-3469-4581-98a5-0b19cb20c5d6" />
 
 Создай `pull request` из `feature` в `develop` и замержи его. Создай `pull request` из `develop` в `master` и замержи его. Пометь замерженный коммит в ветке `master` тегом `release_1.1` и загрузи в свой репозиторий:
 
-<img width="923" height="877" alt="image" src="https://github.com/user-attachments/assets/cb06badb-8215-4474-b7a5-58db3321f016" />
-<img width="922" height="202" alt="image" src="https://github.com/user-attachments/assets/505fc153-0dc0-4207-8c29-aae730c90a1e" />
+<img width="922" height="879" alt="image" src="https://github.com/user-attachments/assets/13ac14dd-10d1-4082-b4af-bff850442485" />
+<img width="917" height="99" alt="image" src="https://github.com/user-attachments/assets/ff31efe3-a0e7-4479-a80c-fdcd31e348cd" />
 
 Замержим:
 
-<img width="936" height="871" alt="image" src="https://github.com/user-attachments/assets/c693154b-3542-4351-92a3-cc590cf27b4a" />
-<img width="916" height="290" alt="image" src="https://github.com/user-attachments/assets/95cab0ee-967a-43a8-b286-7af6e64d2f3d" />
+<img width="929" height="875" alt="image" src="https://github.com/user-attachments/assets/90273b9c-6c42-4ee5-a1e4-06d91a570e70" />
+<img width="922" height="226" alt="image" src="https://github.com/user-attachments/assets/93e040ba-6614-4eea-b8f7-5c67234c1802" />
 
 Выполним команду:
 
@@ -54,11 +57,7 @@ git log --oneline --graph develop
 
 Проверим в терминале:
 
-<img width="809" height="66" alt="image" src="https://github.com/user-attachments/assets/17ced2fb-c2db-4514-8aad-f01bfb9c370c" />
-<img width="807" height="429" alt="image" src="https://github.com/user-attachments/assets/5db77936-acb4-4372-8a65-e306b6b9f0bb" />
-
-<img width="926" height="881" alt="image" src="https://github.com/user-attachments/assets/200a9075-bc84-4d3b-9cdc-ebaacbedb640" />
-<img width="925" height="395" alt="image" src="https://github.com/user-attachments/assets/7a5716e1-2954-4e8d-ad88-5116a57f3483" />
+<img width="815" height="505" alt="image" src="https://github.com/user-attachments/assets/d745f196-65ff-4744-895c-382294d6515d" />
 
 Замержим:
 
@@ -75,34 +74,20 @@ git log --oneline --graph master
 
 Проверим в терминале:
 
-<img width="812" height="593" alt="image" src="https://github.com/user-attachments/assets/59e6e988-db4f-42cb-b6f2-2945d4c03c20" />
+<img width="818" height="586" alt="image" src="https://github.com/user-attachments/assets/31730f70-e340-4516-82c5-afe54900c770" />
+<img width="812" height="25" alt="image" src="https://github.com/user-attachments/assets/f88a077e-8cc0-4767-932b-51eb784d4f08" />
 
-Создадим тег через коммит. Перейдём в `Repository`, затем `Commits`. Найдём последний коммит в `master` (после мержа). Нажмём на хеш коммита. Нажми `Tags`, затем `New tag`. Заполним:
-
-- `Tag name`: `release_1.1`
-- `Message`: `Release version 1.1`
-- `Create from`: коммит после мержа
-
-Покажем:
-
-<img width="950" height="583" alt="image" src="https://github.com/user-attachments/assets/635b8804-76a4-4a56-91e2-d30ba5154998" />
-<img width="952" height="333" alt="image" src="https://github.com/user-attachments/assets/fe4d410b-8df5-45ae-a7a2-2ebc2e596f31" />
-
-Нажмем `Create release`:
-
-<img width="933" height="880" alt="image" src="https://github.com/user-attachments/assets/c368df8b-f12b-4b93-9a00-861c6dec33fd" />
-<img width="926" height="316" alt="image" src="https://github.com/user-attachments/assets/b00a1fad-eb9f-4c46-a6bc-c7bf576ddcd9" />
-
-Нажмем `Create release`:
-
-<img width="916" height="343" alt="image" src="https://github.com/user-attachments/assets/3f3cb0c1-13d0-4da0-8c48-54600b9ffbef" />
-
-Выполним команды:
+Создадим тег:
 
 ```bash
-git pull flow --tag master
+git checkout master
+git tag release_1.1
 git log --oneline --graph master
+git push flow release_1.1
 ```
-Проверим в терминале:
 
-<img width="807" height="421" alt="image" src="https://github.com/user-attachments/assets/8cf82375-86da-4b04-8dd0-801cfaf1a396" />
+Покажем в терминале:
+
+<img width="821" height="469" alt="image" src="https://github.com/user-attachments/assets/8db1b9af-5770-4421-9d2b-31495b5d5826" />
+
+
