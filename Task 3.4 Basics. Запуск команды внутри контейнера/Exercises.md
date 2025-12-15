@@ -56,11 +56,14 @@ cat nginx.conf
 docker exec inno-dkr-03 nginx -s reload
 curl http://127.0.0.1:8890
 docker exec -ti inno-dkr-03 md5sum /etc/nginx/nginx.conf
+docker ps
 ```
 
 Покажем в терминале:
 
 <img width="1137" height="39" alt="image" src="https://github.com/user-attachments/assets/dfe80f31-990c-40b8-bc2c-565ea801c9d7" />
 <img width="1630" height="72" alt="image" src="https://github.com/user-attachments/assets/0b3c8378-e02d-4240-9b40-c55be23e5921" />
+<img width="1629" height="72" alt="image" src="https://github.com/user-attachments/assets/b7a2dcc0-2909-458f-981f-aa9ae4775231" />
+
 
 
