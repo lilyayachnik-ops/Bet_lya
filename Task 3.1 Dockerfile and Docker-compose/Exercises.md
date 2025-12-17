@@ -126,25 +126,65 @@ http {
 
 <img width="915" height="337" alt="image" src="https://github.com/user-attachments/assets/2f203f59-2a5f-4db4-bfc6-387023b629db" />
 
-Задание 2 – развертывание приложения с помощью Docker-compose
-Шаги, которые необходимо выполнить:
-1. Создайте новый файл docker-compose.yml в пустой директории на
-вашем локальном компьютере.
-2. Напишите инструкцию version в версии 3.
-3. Определите сервис для базы данных PostgreSQL. Назовите его ""db"".
-Используйте образ postgres:latest, задайте переменные окружения
-POSTGRES_USER, POSTGRES_PASSWORD и POSTGRES_DB для
-установки пользовательского имени, пароля и имени базы данных
-соответственно.
-4. Определите сервис для веб-сервера на основе образа NGINX. Назовите
-его ""web"". Используйте образ nginx:latest. Определите порт, на котором
-должен работать сервер, с помощью инструкции ports. Задайте путь к
-файлам конфигурации NGINX внутри контейнера, используя
-инструкцию volumes.
-5.* Определите ссылку на сервис базы данных в сервисе веб-сервера.
-Используйте инструкцию links.
-6. Сохраните файл docker-compose.yml и запустите приложение с
-помощью команды docker-compose up.
-7. Проверьте, что приложение работает, перейдя в браузере на
-localhost:80."
+**Задание 2**: развертывание приложения с помощью `Docker-compose`.
 
+Шаги, которые необходимо выполнить:
+- Создайте новый файл `docker-compose.yml` в пустой директории на
+вашем локальном компьютере.
+- Напишите инструкцию `version` в версии `3`.
+- Определите сервис для базы данных `PostgreSQL`. Назовите его `db`. Используйте образ `postgres:latest`, задайте переменные окружения: `POSTGRES_USER`, `POSTGRES_PASSWORD` и `POSTGRES_DB` для установки пользовательского имени, пароля и имени базы данных соответственно.
+- Определите сервис для веб-сервера на основе образа `NGINX`. Назовите его `web`. Используйте образ `nginx:latest`. Определите порт, на котором должен работать сервер, с помощью инструкции `ports`. Задайте путь к файлам конфигурации `NGINX` внутри контейнера, используя инструкцию `volumes`.
+- Определите ссылку на сервис базы данных в сервисе веб-сервера. Используйте инструкцию `links`.
+- Сохраните файл `docker-compose.yml` и запустите приложение с помощью команды `docker-compose up`.
+- Проверьте, что приложение работает, перейдя в браузере на `localhost:80`.
+
+```bash
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_password
+      POSTGRES_DB: postgres_db 
+  web:
+    image: nginx:latest
+    ports: 
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    links:
+      - db
+```
+
+Содержимое файла `nginx.conf`:
+
+```bash
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen 80;
+        server_name localhost;
+        
+        location / {
+            return 200 'Docker Compose is working!\n\nPostgreSQL Configuration:\nUser: postgres_user\nDatabase: postgres_db\n';
+            add_header Content-Type text/plain;
+        }
+    }
+}
+```
+
+Запустим приложение с помощью команды `docker-compose up -d`, где `-d` — запускает контейнеры в фоновом режиме. Покажем в терминале:
+
+<img width="1459" height="113" alt="image" src="https://github.com/user-attachments/assets/06698261-4b57-4c47-903a-49033375247f" />
+
+Дёрнем наше приложение, используя команду `curl http://localhost:8080/`. Покажем в терминале:
+
+<img width="891" height="133" alt="image" src="https://github.com/user-attachments/assets/0115ac4d-eaf2-4656-bb7c-4ecb3a57b97d" />
+
+Проверим в браузере:
+
+<img width="777" height="189" alt="image" src="https://github.com/user-attachments/assets/5549e37c-32d0-4625-8268-2f7e36aa15e4" />
