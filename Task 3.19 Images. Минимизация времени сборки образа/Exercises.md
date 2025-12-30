@@ -144,7 +144,7 @@ time docker build -f Dockerfile.mini -t couter-app:mini .
 <img width="1604" height="619" alt="image" src="https://github.com/user-attachments/assets/6962dae7-531f-44fc-92ba-eb03552788f6" />
 
 Соберём новый образ с тегом `squash`. При сборке используй ключ `--squash` для уменьшения объема образа и с замером времени, чтобы определить, сколько времени займет сборка (для включения `squash` понадобится включение эксперементальных функций). 
-Поскольку опция `--squash` не поддерживает в моей версии `Docker`, установим его через `pip`:
+Поскольку опция `--squash` не поддерживается в моей версии `Docker`, установим его через `pip`:
 
 ```bash
 pip install docker-squash
@@ -234,3 +234,15 @@ time docker-squash -t counter-app:squash counter-app:mini
 
 <img width="1605" height="593" alt="image" src="https://github.com/user-attachments/assets/5da49ebd-6bc4-4246-ba42-564975398303" />
 <img width="1595" height="867" alt="image" src="https://github.com/user-attachments/assets/6d5dff29-5706-443d-95e8-1b1b72460f3f" />
+
+Сравним размеры получившихся образов:
+
+```bash
+docker images
+```
+
+Покажем в терминале:
+
+<img width="785" height="577" alt="image" src="https://github.com/user-attachments/assets/c47970a2-de6b-4c0d-85ac-2e26d4d5c8b6" />
+
+Размеры отличаются
