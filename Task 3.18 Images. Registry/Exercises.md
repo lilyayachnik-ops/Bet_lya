@@ -122,7 +122,12 @@ curl "http://localhost:7000/?a=8&b=10"
 ```bash
 docker login
 docker tag gocalc:v1.0 betl123/innowise-training:sum-v1.0
-docker push betl123/innowise-training:sum-v1.0
+
+# betl123 — username
+# innowise-training — the name of repository
+# sum-v1.0 — the name of tag
+
+$ docker push betl123/innowise-training:sum-v1.0
 ```
 
 Покажем в термниале:
