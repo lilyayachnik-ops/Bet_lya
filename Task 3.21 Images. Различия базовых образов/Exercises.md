@@ -120,6 +120,126 @@ docker history zookeeper-bookworm:latest
 <img width="1348" height="464" alt="image" src="https://github.com/user-attachments/assets/42b44354-6003-4b46-9ca2-63ee6eed4026" />
 <img width="1159" height="509" alt="image" src="https://github.com/user-attachments/assets/197a03b9-f950-49e2-bb39-d63f4378ab15" />
 
+
+
 **Опционально**: Объединим команду скачки/распаковки `mvn`, команду сборки приложения и команду удаления `mvn` (после сборки приложения менеджер пакетов не нужен в образе) в одну директиву `RUN`. Соберём образ заново и оценим новые размеры образов и слоёв:
 
+1) Содержимое `Dockerfile.alpine`:
+
+```bash
+FROM openjdk:14-ea-8-jdk-alpine3.10
+
+ARG MAVEN_VERSION=3.8.9
+ARG USER_HOME_DIR="/root"
+
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+# Speed up Maven JVM
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+WORKDIR /app
+
+# Copying and assembling
+COPY . /app
+
+
+# Install Maven  through curl
+RUN apk add --no-cache \ 
+    curl \
+    tar \
+    bash \
+    && mkdir -p /usr/share/maven \
+    && curl -fsSL https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -o /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 \
+    && rm /tmp/maven.tar.gz \
+    && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
+    && mvn clean install -DskipTests \
+    && rm -rf /usr/share/maven \
+    && rm -rf ~/.m2/repository/* \
+    && apk del \
+       curl \
+       tar \
+       bash \
+    && rm -rf /var/cache/apk/* 
+
+# Launching the JAR
+CMD ["java", "-jar", "/app/zookeeper-server/target/zookeeper-server-*.jar"]
+```
+
+Соберём его:
+
+```bash
+docker build -f Dockerfile.alpine -t zookeeper-alpine:latest .
+```
+
+Покажем в термминале:
+
+<img width="1244" height="600" alt="image" src="https://github.com/user-attachments/assets/a28d4579-42bb-46ed-9b78-a82c9430cd15" />
+
+2) Содержимое `Dockerfile.bookworm`:
+
+```bash
+FROM openjdk:22-jdk-bookworm
+
+ARG MAVEN_VERSION=3.8.9
+ARG USER_HOME_DIR="/root"
+
+ENV MAVEN_HOME /usr/share/maven
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
+
+# Speed up Maven JVM
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+
+WORKDIR /app
+
+# Copying and assembling
+COPY . /app
+
+# Single RUN directive: Install Maven, build application, and cleanup
+RUN apt-get update \ 
+    && apt-get install --no-install-recommends -y \ 
+    curl \
+    bash \
+    && mkdir -p /usr/share/maven \
+    && curl -fsSL https://dlcdn.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz -o /tmp/maven.tar.gz \
+    && tar -xzf /tmp/maven.tar.gz -C /usr/share/maven --strip-components=1 \
+    && rm /tmp/maven.tar.gz \
+    && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn \
+    && mvn clean install -DskipTests \
+    && rm -rf /usr/share/maven \
+    && rm -rf ~/.m2/repository/* \
+    && apt-get purge -y --auto-remove  \
+       curl \
+    && rm -rf /var/lib/apt/lists/* 
+
+# Launching the JAR
+CMD ["java", "-jar", "/app/zookeeper-server/target/zookeeper-server-*.jar"]
+```
+
+Соберём его:
+
+```bash
+docker build -f Dockerfile.bookworm -t zookeeper-bookworm:latest .
+```
+
+Покажем в термминале:
+
+<img width="1407" height="601" alt="image" src="https://github.com/user-attachments/assets/3ce54dbe-2311-4ef6-b572-0aab848f2ae2" />
+
+Посмотрим слои и оценим размеры:
+
+```bash
+docker images
+docker history zookeeper-alpine:latest
+docker history zookeeper-bookworm:latest
+```
+
+Покажем в терминале:
+
+<img width="1089" height="531" alt="image" src="https://github.com/user-attachments/assets/738f3576-e1d1-41bd-b6f8-1e1f32d838a9" />
+<img width="1346" height="442" alt="image" src="https://github.com/user-attachments/assets/064c9e16-cc8c-4935-9208-d3fc018bbb34" />
+<img width="1402" height="492" alt="image" src="https://github.com/user-attachments/assets/3241598c-58e2-4263-9876-27c533c01332" />
+
+Размер значительно уменьшился.
 
