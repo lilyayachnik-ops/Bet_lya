@@ -42,3 +42,18 @@ docker inspect inno-dkr-24
 
 <img width="1597" height="29" alt="image" src="https://github.com/user-attachments/assets/15ebc1cb-3fef-4dad-8120-615e40bea327" />
 <img width="1535" height="203" alt="image" src="https://github.com/user-attachments/assets/13552656-e2b1-4bb7-97b5-d9c8f003f2a0" />
+
+**Важно**:
+
+1) **USER**:
+The default user within a container is root (`uid = 0`). You can set a default user to run the first process with the Dockerfile `USER` instruction. When starting a container, you can override the `USER` instruction by passing the `-u` option.
+
+The `USER` instruction sets the user name (or `UID`) and optionally the user group (or `GID`) to use as the default user and group for the remainder of the current stage. The specified user is used for RUN instructions and at runtime, runs the relevant ENTRYPOINT and CMD commands.
+
+2) **--privileged**:
+The --privileged flag gives all capabilities to the container. When the operator executes docker run --privileged, Docker enables access to all devices on the host, and reconfigures AppArmor or SELinux to allow the container nearly all the same access to the host as processes running outside containers on the host.
+
+3)  **--devices**:
+If you want to limit access to a specific device or devices you can use the --device flag. It allows you to specify one or more devices that will be accessible within the container.
+
+By default, the container will be able to read, write, and mknod these devices. This can be overridden using a third :rwm set of options to each --device flag.
