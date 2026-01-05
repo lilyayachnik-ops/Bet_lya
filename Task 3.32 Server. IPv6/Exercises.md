@@ -1,15 +1,15 @@
-<img width="1109" height="421" alt="image" src="https://github.com/user-attachments/assets/c27d5dcc-d761-4e8e-a5ae-528d01c14755" /><img width="1109" height="421" alt="image" src="https://github.com/user-attachments/assets/156f9c37-df49-4fe8-bb64-54596eca1321" /># Checkpoints
+# Checkpoints
 
 Включим поддержку `IPv6` в `docker` через конфигурационный файл и перезапустим `docker-daemon`:
 
 ```bash
  "ipv6": true,
-"fixed-cidr-v6": "2001:db8:1::/64"
+"fixed-cidr-v6": "fd00::/80",
 ```
 
 Покажем в терминале:
 
-<img width="1108" height="437" alt="image" src="https://github.com/user-attachments/assets/9669d33b-0e74-4799-bbb7-fffb34dad7d1" />
+<img width="802" height="401" alt="image" src="https://github.com/user-attachments/assets/a03bd125-074f-457c-bfff-f8a6d89f8154" />
 
 Выведим список сетевых адресов в хостовой системе:
 
