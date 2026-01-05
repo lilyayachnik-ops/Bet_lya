@@ -1,4 +1,4 @@
-<img width="734" height="187" alt="image" src="https://github.com/user-attachments/assets/114e55df-1bf4-41c9-98e4-7c2a2a3f8c59" /><img width="960" height="709" alt="image" src="https://github.com/user-attachments/assets/44d447b4-b877-4eb3-9dae-305ea5290f2b" /># Checkpoints
+# Checkpoints
 
 Развернём локальный `registry` согласно официальной документации. Для этого зарегистрируемся в `Docker Hub`:
 
