@@ -86,10 +86,11 @@ CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
 
 ```bash
 # Use Ubuntu 24.04 as the base image for production
-FROM ubuntu:24.04
+FROM ubuntu:24.04 AS builder
 
 # Set environment variables for Rails production environment
 ENV RAILS_ENV=production
+ENV BUNDLE_PATH=/usr/local/bundle
 
 # Install system dependencies optimized for production
 RUN apt-get update \
@@ -126,21 +127,28 @@ COPY package.json yarn.lock Gemfile Gemfile.lock ./
 RUN yarn install --production
 
 # Install Ruby dependencies, excluding development and test gems for production
-RUN bundle install --without development test
+RUN bundle install --without development test 
 
-# Copy the rest of the application code into the container
 COPY . .
 
-# Start the Rails production server, binding to all network interfaces
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
+FROM ubuntu:24.04 AS production
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y \
+   ruby-full \
+    bundler \
+    && rm -rf /var/lib/apt/lists/*
+# Copy from builder
+COPY --from=builder /usr/local/bundle /usr/local/bundle  
+COPY --from=builder /app /app
 ```
 
 Покажем в терминале:
 
-<img width="1031" height="166" alt="image" src="https://github.com/user-attachments/assets/8655b29d-b9bf-4bea-ab7d-8f60f325002d" />
-<img width="932" height="371" alt="image" src="https://github.com/user-attachments/assets/c34e01a0-6921-4486-85bd-1e3f4bbbf2ae" />
-<img width="1045" height="406" alt="image" src="https://github.com/user-attachments/assets/030f7193-3844-405a-8f33-cdb8113ceeaa" />
-<img width="1190" height="191" alt="image" src="https://github.com/user-attachments/assets/9d6833f5-8771-42e7-b285-1bf65a37bd7c" />
+<img width="1536" height="874" alt="image" src="https://github.com/user-attachments/assets/49dbf76b-7ebe-4ba1-94d6-f1518dc9fdaf" />
+<img width="1478" height="726" alt="image" src="https://github.com/user-attachments/assets/501af7ac-6f70-4021-8cf5-3e5a087ba9d8" />
 
 Собери `2` образа, выставив им теги `alonetone:dev` для образа с `development` зависимостями, и `alonetone:prod` для образа без завистимостей: 
 
@@ -152,7 +160,7 @@ docker build -f ./Dockerfile.prod -t alonetone:prod .
 Покажем в терминале:
 
 <img width="1593" height="597" alt="image" src="https://github.com/user-attachments/assets/5fb7b5e9-592e-4c9c-8e66-4165c6c4ede3" />
-<img width="1593" height="577" alt="image" src="https://github.com/user-attachments/assets/570428bc-2c64-48f0-999f-c7dcee6cd1b8" />
+<img width="1600" height="668" alt="image" src="https://github.com/user-attachments/assets/0356e40c-fb07-4d64-a5a2-f0b314f52d0a" />
 
 Выведи список образов:
 
