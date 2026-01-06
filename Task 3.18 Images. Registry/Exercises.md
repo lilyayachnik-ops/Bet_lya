@@ -134,3 +134,56 @@ $ docker push betl123/innowise-training:sum-v1.0
 
 <img width="1147" height="157" alt="image" src="https://github.com/user-attachments/assets/7840cf2f-c938-4d07-b1ae-0c1baa918ff7" />
 <img width="1172" height="468" alt="image" src="https://github.com/user-attachments/assets/4b5d78ce-5974-4d44-814a-c042feac605f" />
+
+
+Развернём локальный `registry` согласно официальной документации:
+
+```bash
+docker run -d -p 5000:5000 --restart always --name registry registry:3
+```
+
+Покажем в терминале:
+
+<img width="1399" height="291" alt="image" src="https://github.com/user-attachments/assets/f1764711-ca66-4dbc-bc37-9dca4385c85e" />
+
+Соберём образ приложения `gocalc`, которое мы собирали ранее. Содержимое `Dockerfile` для приложения `gocalc`:
+
+```bash
+FROM golang:alpine AS builder
+WORKDIR /app
+COPY main.go .
+ENV GO111MODULE=off
+RUN go build -o app .
+
+FROM gcr.io/distroless/base
+WORKDIR /app
+COPY --from=builder /app/app .
+EXPOSE 7000
+CMD ["./app"]
+```
+
+Покажем в терминале:
+
+<img width="907" height="272" alt="image" src="https://github.com/user-attachments/assets/7125a58c-dc54-4070-a4a1-b07837ab01e0" />
+
+Соберём образ, используя команду:
+
+```bash
+docker build -t gocalc:v1.0
+```
+
+Покажем в терминале:
+
+<img width="1607" height="599" alt="image" src="https://github.com/user-attachments/assets/3a6cca7b-9499-4f62-89b1-6d687e7bc14c" />
+
+Образ необходимо загрузить  в локальный `registry`:
+
+```bash
+docker tag gocalc:v1.0 localhost:5000/gocalc:v1.0
+docker push localhost:5000/gocalc:v1.0
+```
+
+Покажем в терминал:
+
+<img width="1503" height="466" alt="image" src="https://github.com/user-attachments/assets/96df2701-3f20-45d4-a0e7-5ee6aa0505db" />
+
