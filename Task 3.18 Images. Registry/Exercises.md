@@ -169,7 +169,7 @@ CMD ["./app"]
 Соберём образ, используя команду:
 
 ```bash
-docker build -t gocalc:v1.0
+docker build -t gocalc:v1.0 .
 ```
 
 Покажем в терминале:
