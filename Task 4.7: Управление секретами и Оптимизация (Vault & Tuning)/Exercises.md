@@ -1,4 +1,4 @@
-<img width="1354" height="361" alt="image" src="https://github.com/user-attachments/assets/d89efd35-e884-4e51-b0ad-ec44359680e8" /><img width="1354" height="361" alt="image" src="https://github.com/user-attachments/assets/a8f834e6-b7c1-4220-a23d-7b6230626ad6" /># Checkpoints
+# Checkpoints
 
 **Задание** `7.1`: Работа с `Vault` (`No Interactive Mode`) Сейчас у тебя пароль от БД лежит в `group_vars/dbservers.yml` или `roles/.../defaults`:
 
