@@ -354,3 +354,46 @@ ansible-playbookr site.yml
 
 
 Сделай вывод: почему установка пакетов занимает столько времени и можно ли это кэшировать (нет, но понимать надо)?
+
+**Установка пакетов занимает время из-за сетевых задержек, разрешения зависимостей и дисковых операций. Кэшировать сам процесс распаковки и настройки пакета (dpkg/rpm) нельзя**
+
+**Критерии приемки** (`Definition of Done`):
+
+1. В репозитории нет ни одного `plain-text секрета`. Поиск по слову `password` или содержимому ключа ничего не дает. Покажем в терминале:
+
+<img width="236" height="918" alt="image" src="https://github.com/user-attachments/assets/8bbcd2f9-58dc-496d-af54-aa86c9db6478" />
+<img width="235" height="421" alt="image" src="https://github.com/user-attachments/assets/db5ec813-4cec-448c-a5f1-03fbc378a926" />
+
+2. При запуске `ansible-playbook` не запрашивается пароль от `Vault` (берется из файла). Покажем в терминале:
+
+<img width="1599" height="416" alt="image" src="https://github.com/user-attachments/assets/bbcb122a-4856-4b3a-96ee-aaae46ba3e85" />
+
+3. На сервере балансировщика в `/etc/nginx/ssl/` лежат валидные ключ и сертификат.
+Проверка: `openssl x509 -in /etc/nginx/ssl/server.crt -text -noout` не выдает ошибок:\
+
+```bash
+ansible balancers -m shell -a "openssl x509 -in /etc/ssl/certs/nginx-selfsigned.crt -text -noout"
+```
+
+Покажем в терминале:
+
+<img width="1607" height="525" alt="image" src="https://github.com/user-attachments/assets/13cdcdbb-9d23-41b5-bb06-cd573819f6d2" />
+<img width="1473" height="568" alt="image" src="https://github.com/user-attachments/assets/c4cfe082-b8c6-41bb-af3d-d94c52bd6197" />
+<img width="1518" height="224" alt="image" src="https://github.com/user-attachments/assets/b7faeab1-5efb-4f20-a789-d0d4f3598ec6" />
+
+Nginx успешно рестартует:
+
+```bash
+ansible balancers -m shell -a "systemctl status nginx" -b
+```
+
+Покажем в терминале:
+
+<img width="1544" height="484" alt="image" src="https://github.com/user-attachments/assets/60f728de-df14-4930-a76d-228169358cba" />
+
+4. Включен `Pipelining`. В логах `/var/log/auth.log` (или `secure`) на сервере видно меньше сессий `sshd` на один прогон плейбука, чем раньше.
+Ты понимаешь, что такое `ControlMaster` и где лежат сокеты `SSH`:
+
+!!`ControlMaster` — механизм `OpenSSH` для переиспользования `SSH` соединений. Создаёт мастер-процесс, к которому подключаются последующие сессии вместо создания новых.!!
+
+Сокеты лежат в !!`~/.ansible/cp/`!!
