@@ -310,3 +310,15 @@ while true; do   curl -k https://phoenix.local/current_version.html;   echo " - 
 Покажем в терминале:
 
 <img width="1376" height="735" alt="image" src="https://github.com/user-attachments/assets/5b447946-d6b5-4fa0-a0b1-bb73701dbf8e" />
+
+**Критерии приемки** (`Definition of Done`)
+
+1. У тебя есть минимум `2` App-сервера.
+2. В `deploy.yml` используется `serial: 1`.
+3. Ты реализовал взаимодействие между узлами: изменение файла на App вызывает перезагрузку сервиса на `LB`.
+4. Попытка деплоя сломанной версии приводит к ошибке в `Ansible`, но сервис `Phoenix` остается доступным для пользователей (так как `App2` не был затронут, а `App1` был откачен или изолирован).
+5. Ты понимаешь разницу между `failed_when` (критерий сбоя) и `ignore_errors` (игнорирование сбоя). В `Smoke Test` мы не игнорируем ошибки, мы их ловим через `rescue`:
+
+`failed_when` — даем своё определение ошибок. 
+
+`ignore_errors` говорит "забей" → `playbook` продолжается 
