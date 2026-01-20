@@ -630,7 +630,11 @@ app_port: 8000
 
 3. `Resilience Test`: Я перезагружаю все `3` сервера (`reboot`). После загрузки приложение само поднимается, и сайт снова доступен.
 
-<img width="1310" height="795" alt="image" src="https://github.com/user-attachments/assets/531186e4-009d-4cac-a761-608fb251e3a7" />
-<img width="1179" height="186" alt="image" src="https://github.com/user-attachments/assets/0149b1c0-4031-4fa5-90b4-5816ce0111e0" />
+<img width="1494" height="418" alt="image" src="https://github.com/user-attachments/assets/d492cb46-150f-4c79-b6ac-7b57c02a8570" />
+<img width="1693" height="572" alt="image" src="https://github.com/user-attachments/assets/fc056e5b-8ee3-485f-8e3c-e6dd04e8bb89" />
+<img width="622" height="45" alt="image" src="https://github.com/user-attachments/assets/67f2c0e3-8577-4647-8fbe-d10245cb93f6" />
 
 4. `Code Quality`: В репозитории нет открытых секретов. Структура папок соответствует `Best Practices`.
+
+<img width="248" height="656" alt="image" src="https://github.com/user-attachments/assets/69d6f969-2d2c-44f0-96f3-72cb4ad25692" />
+<img width="204" height="629" alt="image" src="https://github.com/user-attachments/assets/e0ff1b9d-3d6a-4b81-a6bf-7f0e2ad77faa" />
