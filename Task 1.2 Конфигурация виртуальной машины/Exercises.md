@@ -1,4 +1,4 @@
-# Chekpoints
+Chekpoints
 Поднимем Ubuntu на VirtualBox. Создадим там пользователей Raymond и John, используя следующие команды:
 
 <img width="958" height="641" alt="image" src="https://github.com/user-attachments/assets/a1f76fec-6a07-42c5-83cb-ccf2ea59c097" />
